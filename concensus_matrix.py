@@ -1,7 +1,11 @@
 import os
 import pandas as pd
 import numpy as np
-target_dir = ".\cluster_data"
+
+###### INPUT HERE #####
+target_dir = ".\cluster_test_data"
+###### INPUT HERE #####
+
 data_path_list = list()
 for root, dirs, files in os.walk(target_dir):
     for file in files:
@@ -15,28 +19,35 @@ df = pd.read_csv(path)
 concensus_matrix = np.zeros((len(df), len(df)))
 
 #loop through all the data files found 
+counter = 0
 for path in data_path_list:
+    if(counter != 0):
+        print("{}/{} finished!".format(counter, len(data_path_list)))
     df = pd.read_csv(path)
     df.columns = ['cluster']
     num_cluster = df.max().values[0]
-    print(num_cluster)
-    #print("Total cluster in file {}: {}".format(path, num_cluster))
     cluster_cell_dict = {}
+    
+    # instantiate the dictionary
     for idx in range(num_cluster):
         cluster_cell_dict[idx+1] = []
     cell_count = 0
+
     # store cells by cluster
     for idx, row in df.iterrows():
         cell_cluster = row['cluster']
         cluster_cell_dict[cell_cluster].append(cell_count)
         cell_count += 1
+
     # loop through the separated cells and add count to concensus matrix 
     for key, values in cluster_cell_dict.items():
-        print(key)
         cur_freq_matrix = values
         for outer in cur_freq_matrix:
             for inner in cur_freq_matrix:
                 concensus_matrix[outer][inner] += 1
+    counter += 1
 #Normalize the concensus matrix 
+print("{}/{} finished!".format(counter, len(data_path_list)))
 concensus_matrix = concensus_matrix / len(data_path_list)
+print("Writing normalized concensus matrix to concensus_matrix.csv")
 np.savetxt("concensus_matrix.csv", concensus_matrix, fmt="%f", delimiter=',')
