@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 
 ###### INPUT HERE #####
-target_dir = ".\cluster_data"
-combined = False
+target_dir = ".\cluster_data" #root directory of all the files 
+combined = False #ignore for now 
 ###### INPUT HERE #####
 
 data_path_list = list()
